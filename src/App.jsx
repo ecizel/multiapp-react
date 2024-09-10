@@ -6,7 +6,7 @@ import EncontrarIp from "./components/EncontrarIp"
 import TelaLogin from "./components/TelaLogin"
 import ProtectedRoute from "./components/ProtectedRoute"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 // preparo pra tarefa 5
@@ -18,15 +18,22 @@ function App() {
 
   const checarLogin = () => {
     const login = localStorage.getItem("login")
-    if (login) {
-      if (login === 1)
-        setLogado(true)
-    } else {
-      localStorage.setItem("login", 0)
-    }
+
+    setLogado(prevLogado => {
+      
+      if (login) {
+        if (login === '1')
+          return true
+      }
+      else
+        localStorage.setItem("login", 0)
+      return false
+    })
   }
 
-  checarLogin()
+  useEffect(() => {
+    checarLogin()
+  }, [])
 
   return (
     <>
@@ -35,14 +42,14 @@ function App() {
         <Routes>
           <Route path="/tradutor" 
             element={
-            <ProtectedRoute logado={logado}>
+            <ProtectedRoute logado={logado} login={checarLogin}>
               <Tradutor/>
             </ProtectedRoute>}
           />
 
           <Route path="/qrcode" 
             element={
-            <ProtectedRoute logado={logado}>
+            <ProtectedRoute logado={logado} login={checarLogin}>
               <QrCoder/>
             </ProtectedRoute>}
           />
